@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,6 +18,37 @@ import java.util.List;
 import java.util.Scanner;
 
 public class WeatherService {
+    public List<DataWeatherDto> getListGoodDays(LocationNames locationNames) {
+
+        URL urlJastarnia;
+        URL urlBridgetown;
+        URL urlFortaleza;
+        URL urlProtaras;
+        URL urlSurinam;
+        try {
+            urlJastarnia = new URL("https://api.weatherbit.io/v2.0/forecast/daily?city_id=3097421&key=1704416c90e14d18874c1e499efac899\n");
+            urlBridgetown = new URL("https://api.weatherbit.io/v2.0/forecast/daily?city_id=4507067&key=1704416c90e14d18874c1e499efac899\n");
+            urlFortaleza = new URL("https://api.weatherbit.io/v2.0/forecast/daily?city_id=3399415&key=1704416c90e14d18874c1e499efac899\n");
+            urlProtaras = new URL("https://api.weatherbit.io/v2.0/forecast/daily?city_id=18918&key=1704416c90e14d18874c1e499efac899\n");
+            urlSurinam = new URL("https://api.weatherbit.io/v2.0/forecast/daily?city_id=933988&key=1704416c90e14d18874c1e499efac899\n");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("INVALID URL. KEY EXPIRED.");
+        }
+
+        switch (locationNames) {
+            case JASTARNIA:
+                return createListGoodWeather(urlJastarnia, locationNames);
+            case BRIDGETOWN:
+                return createListGoodWeather(urlBridgetown, locationNames);
+            case FORTALEZA:
+                return createListGoodWeather(urlFortaleza, locationNames);
+            case PROTARAS:
+                return createListGoodWeather(urlProtaras, locationNames);
+            case SURINAM:
+                return createListGoodWeather(urlSurinam, locationNames);
+        }
+        return null;
+    }
 
     public List<DataWeatherDto> createListGoodWeather(URL url, LocationNames locationNames) {
         List<DataWeatherDto> list = new ArrayList<>();
