@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
+import com.example.demo.dtos.BestDayDto;
 import com.example.demo.dtos.DataWeatherDto;
 import com.example.demo.enums.LocationNames;
+import com.example.demo.exception.WeatherException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,10 +16,22 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
 public class WeatherService {
+    public BestDayDto findWeather(LocalDate date, LocationNames locationNames) {
+        if (date.isBefore(LocalDate.now()) || date.isAfter(date.plusDays(7))) {
+            throw new WeatherException("WRONG VALUE. ENTER THE DATE FROM " + LocalDate.now() + " TO " + LocalDate.now().plusDays(7), LocalDate.now());
+        }
+        DataWeatherDto dataWeatherDto = getListGoodDays(locationNames).stream()
+                .filter(o -> o.getDate().compareTo(date) == 0)
+                .max(Comparator.comparing(o -> o.getWind_spd() * 3 + o.getTemp()))
+                .orElse(new DataWeatherDto());
+
+        return new BestDayDto(dataWeatherDto.getLocationNames(), dataWeatherDto.getMin_temp(), dataWeatherDto.getWind_spd());
+    }
     public List<DataWeatherDto> getListGoodDays(LocationNames locationNames) {
 
         URL urlJastarnia;
