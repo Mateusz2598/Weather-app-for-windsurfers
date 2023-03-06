@@ -21,6 +21,26 @@ import java.util.List;
 import java.util.Scanner;
 
 public class WeatherService {
+
+    public BestDayDto findLocation(LocalDate date) {
+        if (date.isBefore(LocalDate.now()) || date.isAfter(date.plusDays(7))) {
+            throw new WeatherException("WRONG VALUE. ENTER THE DATE FROM " + LocalDate.now() + " TO " + LocalDate.now().plusDays(7));
+        }
+        List<DataWeatherDto> list = new ArrayList<>();
+        List.of(LocationNames.values()).stream()
+                .forEach(o -> {
+                    List<DataWeatherDto> supportingList = getListGoodDays(o);
+                    list.addAll(supportingList);
+                });
+
+        DataWeatherDto dataWeatherDto = list.stream()
+                .filter(o -> o.getDate().compareTo(date) == 0)
+                .max(Comparator.comparing(o -> o.getWind_spd() * 3 + o.getTemp()))
+                .orElse(new DataWeatherDto());
+
+        return new BestDayDto(dataWeatherDto.getLocationNames(), dataWeatherDto.getMin_temp(), dataWeatherDto.getWind_spd());
+    }
+
     public BestDayDto findWeather(LocalDate date, LocationNames locationNames) {
         if (date.isBefore(LocalDate.now()) || date.isAfter(date.plusDays(7))) {
             throw new WeatherException("WRONG VALUE. ENTER THE DATE FROM " + LocalDate.now() + " TO " + LocalDate.now().plusDays(7), LocalDate.now());
@@ -32,6 +52,7 @@ public class WeatherService {
 
         return new BestDayDto(dataWeatherDto.getLocationNames(), dataWeatherDto.getMin_temp(), dataWeatherDto.getWind_spd());
     }
+
     public List<DataWeatherDto> getListGoodDays(LocationNames locationNames) {
 
         URL urlJastarnia;
