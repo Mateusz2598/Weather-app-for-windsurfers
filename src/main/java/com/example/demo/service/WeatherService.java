@@ -7,6 +7,7 @@ import com.example.demo.exception.WeatherException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
+@Service
 public class WeatherService {
 
     public BestDayDto findLocation(LocalDate date) {
